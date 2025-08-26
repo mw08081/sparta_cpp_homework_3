@@ -1,7 +1,6 @@
 #include <iostream>
 #include <type_traits>
 #include <algorithm>
-#include <stdexcept>
 
 using namespace std;
 
@@ -45,6 +44,17 @@ private:
     int size_;     // 현재 아이템 개수
 
 private:
+    void Assign(const Inventory<T> &other)
+    {
+        this->capacity_ = other.capacity_;
+        this->size_ = other.size_;
+        this->pItems_ = new T[capacity_];
+        for (int i = 0; i < size_; ++i)
+        {
+            this->pItems_[i] = other.pItems_[i];
+        }
+    }
+
     // 용량 2배 확장 함수
     void Resize(int newCapacity)
     {
@@ -53,7 +63,6 @@ private:
             cout << "[Inventory Resize 오류] 아이템 개수보다 적은 용량으로 resize할 수 없습니다.\n";
             return;
         }
-
         T *newItems = new T[newCapacity];
         for (int i = 0; i < size_; ++i)
         {
@@ -63,7 +72,6 @@ private:
 
         this->pItems_ = newItems;
         this->capacity_ = newCapacity;
-        cout << "[Inventory 확장 성공] Inventory 용량이 2배 확장되어 " << this->capacity_ << "이(가) 되었습니다.\n";
     }
 
 public:
@@ -84,17 +92,11 @@ public:
         delete[] this->pItems_;
     }
 
-    // 복사 생성자
+    // 복사 생성자 -> void Assign(const Inventory<T> &other)활용
     Inventory(const Inventory<T> &other)
         : capacity_(other.capacity_), size_(other.size_)
     {
-        this->capacity_ = other.capacity_;
-        this->size_ = other.size_;
-        this->pItems_ = new T[capacity_];
-        for (int i = 0; i < size_; ++i)
-        {
-            this->pItems_[i] = other.pItems_[i];
-        }
+        this->Assign(other);
         cout << "인벤토리 복사 완료\n";
     }
 
